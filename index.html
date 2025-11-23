@@ -6,12 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #f7f7f7;
+      --bg: #f5f5f7;
       --card: #ffffff;
       --accent: #0056b3;
-      --border: #dddddd;
+      --border: #e0e0e0;
       --text-main: #222222;
       --text-sub: #666666;
+      --shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
     }
 
     * {
@@ -21,59 +22,57 @@
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
-      padding: 16px 10px 32px;
+      padding: 10px 8px 20px;
       background: var(--bg);
       color: var(--text-main);
-      line-height: 1.6;
+      line-height: 1.5;
+      font-size: 14px;
     }
 
     .container {
-      max-width: 1080px;
+      max-width: 960px;
       margin: 0 auto;
     }
 
     h1 {
-      font-size: 1.4rem;
-      margin: 0 0 0.3rem;
+      font-size: 1.25rem;
+      margin: 0 0 0.1rem;
     }
 
     .subtitle {
-      margin: 0 0 0.8rem;
-      font-size: 0.9rem;
+      margin: 0 0 0.5rem;
+      font-size: 0.82rem;
       font-weight: 600;
       color: var(--text-sub);
     }
 
     .status {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-sub);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
-    /* コントロールエリア（タブ＋都道府県プルダウン） */
+    /* コントロール（タブ＋都道府県） */
     .controls {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px 12px;
+      gap: 6px 10px;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
-    /* タブ（すべて / IMAX） */
     .tabs {
       display: inline-flex;
-      gap: 6px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid var(--border);
+      gap: 4px;
       flex-wrap: wrap;
     }
 
     .tab-btn {
       border: 1px solid var(--border);
       background: #ffffff;
-      padding: 5px 12px;
+      padding: 3px 10px;
       border-radius: 999px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       cursor: pointer;
       white-space: nowrap;
       color: var(--text-sub);
@@ -86,13 +85,12 @@
       color: #ffffff;
     }
 
-    /* 都道府県プルダウン */
     .pref-filter {
       margin-left: auto;
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
     }
 
     .pref-filter label {
@@ -100,104 +98,151 @@
     }
 
     .pref-filter select {
-      padding: 4px 8px;
+      padding: 3px 8px;
       border-radius: 6px;
       border: 1px solid var(--border);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       background: #ffffff;
+    }
+
+    /* カードリスト */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
     }
 
     .card {
       background: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-      padding: 10px;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 8px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    .table-wrapper {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: nowrap;
     }
 
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      min-width: 640px;
-      font-size: 0.8rem;
-    }
-
-    thead {
-      background: #222222;
-      color: #ffffff;
-    }
-
-    th,
-    td {
-      padding: 7px 8px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-      vertical-align: top;
-    }
-
-    tbody tr:nth-child(even) {
+    .card-pref {
+      font-size: 0.7rem;
+      color: var(--text-sub);
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
       background: #fafafa;
+      flex-shrink: 0;
+    }
+
+    .card-title {
+      font-size: 0.86rem;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .card-imax {
+      margin-left: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .chip-imax {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      background: var(--accent);
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .imax-detail {
+      font-size: 0.68rem;
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
+    .card-body {
+      font-size: 0.76rem;
+      color: var(--text-sub);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .card-label {
+      font-size: 0.7rem;
+      color: #999999;
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+
+    .card-row-inline {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .address-text {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 100%;
     }
 
     a {
       color: var(--accent);
       text-decoration: none;
+      font-size: 0.76rem;
     }
 
     a:hover {
       text-decoration: underline;
     }
 
-    .chip-imax {
-      display: inline-block;
-      padding: 2px 7px;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      background: var(--accent);
-      color: #ffffff;
+    @media (min-width: 720px) {
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
-    .imax-detail {
-      font-size: 0.7rem;
-      color: var(--text-sub);
-      margin-left: 4px;
+    @media (min-width: 980px) {
+      .cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 600px) {
       body {
-        padding: 12px 6px 24px;
+        padding: 8px 6px 18px;
       }
 
       h1 {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
       }
 
       .subtitle {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
       }
 
       .controls {
         flex-direction: column;
         align-items: flex-start;
-        gap: 6px;
       }
 
       .pref-filter {
         margin-left: 0;
-      }
-
-      table {
-        min-width: 520px;
-        font-size: 0.78rem;
-      }
-
-      th,
-      td {
-        padding: 6px 6px;
       }
     }
   </style>
@@ -220,32 +265,17 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>都道府県</th>
-              <th>劇場名</th>
-              <th>住所</th>
-              <th>リンク</th>
-              <th>IMAX</th>
-            </tr>
-          </thead>
-          <tbody id="table-body"></tbody>
-        </table>
-      </div>
-    </div>
+    <div class="cards" id="cards"></div>
   </div>
 
   <script>
-    // 公開スプレッドシートのTSVエクスポートURL（gid=157320113）
+    // 公開スプレッドシート（gid=157320113）のTSV
     const SHEET_TSV_URL =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vShtDnZUCsyJKxq1mUB8Hgid98ngAWYAcgEwhCg2MaV3cqbmyRsEsbr2eyZ8XFdyW00ZdsB2BkJhVuC/pub?gid=157320113&single=true&output=tsv";
 
     const statusEl = document.getElementById("status");
     const tabsEl = document.getElementById("tabs");
-    const tbodyEl = document.getElementById("table-body");
+    const cardsEl = document.getElementById("cards");
     const prefSelectEl = document.getElementById("prefSelect");
 
     let allRows = [];
@@ -264,7 +294,7 @@
       return idx !== -1 ? idx : fallbackIndex;
     }
 
-    // タブを作成（すべて / IMAX）
+    // タブ（すべて / IMAX）
     function createTabs() {
       const defs = [
         { key: "ALL", label: "すべて" },
@@ -290,11 +320,11 @@
         btn.classList.add("active");
 
         currentTabFilter = btn.dataset.filter;
-        renderTable();
+        renderCards();
       });
     }
 
-    // 都道府県プルダウンを日本地理順で作成
+    // 都道府県プルダウン（北→南）
     function createPrefOptions() {
       const PREF_ORDER = [
         "北海道",
@@ -322,20 +352,18 @@
 
       prefSelectEl.addEventListener("change", () => {
         currentPrefFilter = prefSelectEl.value;
-        renderTable();
+        renderCards();
       });
     }
 
-    // タブ＆都道府県フィルターを適用
+    // フィルター適用
     function applyFilters() {
       let rows = allRows.slice();
 
-      // IMAXタブのときだけ IMAXあり を絞り込み
       if (currentTabFilter === "IMAX-YES") {
         rows = rows.filter((r) => r.imaxAvailable);
       }
 
-      // 都道府県フィルター
       if (currentPrefFilter !== "ALL") {
         rows = rows.filter((r) => r.prefecture === currentPrefFilter);
       }
@@ -343,64 +371,89 @@
       return rows;
     }
 
-    // テーブル描画
-    function renderTable() {
-      tbodyEl.innerHTML = "";
+    // カード描画
+    function renderCards() {
+      cardsEl.innerHTML = "";
       const rows = applyFilters();
 
       rows.forEach((row) => {
-        const tr = document.createElement("tr");
+        const card = document.createElement("div");
+        card.className = "card";
 
-        const tdPref = document.createElement("td");
-        tdPref.textContent = row.prefecture || "";
-        tr.appendChild(tdPref);
+        const header = document.createElement("div");
+        header.className = "card-header";
 
-        const tdName = document.createElement("td");
-        tdName.textContent = row.name || "";
-        tr.appendChild(tdName);
+        const pref = document.createElement("div");
+        pref.className = "card-pref";
+        pref.textContent = row.prefecture || "";
+        header.appendChild(pref);
 
-        const tdAddr = document.createElement("td");
-        tdAddr.textContent = row.address || "";
-        tr.appendChild(tdAddr);
+        const title = document.createElement("div");
+        title.className = "card-title";
+        title.textContent = row.name || "";
+        header.appendChild(title);
 
-        const tdLink = document.createElement("td");
-        if (row.url) {
-          const a = document.createElement("a");
-          a.href = row.url;
-          a.target = "_blank";
-          a.rel = "noopener";
-          a.textContent = "公式サイト";
-          tdLink.appendChild(a);
-        }
-        tr.appendChild(tdLink);
-
-        const tdIMAX = document.createElement("td");
         if (row.imaxAvailable) {
+          const imaxWrap = document.createElement("div");
+          imaxWrap.className = "card-imax";
+
           const chip = document.createElement("span");
           chip.className = "chip-imax";
           chip.textContent = "IMAX";
-          tdIMAX.appendChild(chip);
+          imaxWrap.appendChild(chip);
 
-          if (row.imaxRaw) {
-            const text = row.imaxRaw.trim();
-            if (text !== "IMAX" && text !== "-") {
-              const detail = document.createElement("span");
-              detail.className = "imax-detail";
-              // 数字だけなら No.X 表示
-              if (/^\d+$/.test(text)) {
-                detail.textContent = "No." + text;
-              } else {
-                detail.textContent = text;
-              }
-              tdIMAX.appendChild(detail);
+          const text = row.imaxRaw.trim();
+          if (text && text !== "IMAX" && text !== "-") {
+            const detail = document.createElement("span");
+            detail.className = "imax-detail";
+            if (/^\d+$/.test(text)) {
+              detail.textContent = "No." + text;
+            } else {
+              detail.textContent = text;
             }
+            imaxWrap.appendChild(detail);
           }
-        } else {
-          tdIMAX.textContent = "";
-        }
-        tr.appendChild(tdIMAX);
 
-        tbodyEl.appendChild(tr);
+          header.appendChild(imaxWrap);
+        }
+
+        card.appendChild(header);
+
+        const body = document.createElement("div");
+        body.className = "card-body";
+
+        if (row.address) {
+          const addrRow = document.createElement("div");
+          addrRow.className = "card-row-inline";
+          const label = document.createElement("span");
+          label.className = "card-label";
+          label.textContent = "住所";
+          const addr = document.createElement("span");
+          addr.className = "address-text";
+          addr.textContent = row.address;
+          addrRow.appendChild(label);
+          addrRow.appendChild(addr);
+          body.appendChild(addrRow);
+        }
+
+        if (row.url) {
+          const linkRow = document.createElement("div");
+          linkRow.className = "card-row-inline";
+          const label = document.createElement("span");
+          label.className = "card-label";
+          label.textContent = "公式";
+          const link = document.createElement("a");
+          link.href = row.url;
+          link.target = "_blank";
+          link.rel = "noopener";
+          link.textContent = "Webサイト";
+          linkRow.appendChild(label);
+          linkRow.appendChild(link);
+          body.appendChild(linkRow);
+        }
+
+        card.appendChild(body);
+        cardsEl.appendChild(card);
       });
 
       let label = currentTabFilter === "IMAX-YES" ? "IMAX" : "すべて";
@@ -410,7 +463,7 @@
       statusEl.textContent = `表示中: ${label}（${rows.length}館）`;
     }
 
-    // 初期化：スプレッドシートから読み込み
+    // 初期化
     async function init() {
       try {
         statusEl.textContent = "読み込み中…";
@@ -431,7 +484,7 @@
         const nameIndex = detectColumnIndex(header, "劇場名", 1);
         const urlIndex  = detectColumnIndex(header, "URL", 2);
         const addrIndex = detectColumnIndex(header, "住所", 3);
-        // IMAX情報は E列（index 4）想定。ヘッダー名が「IMAX」ならそれを優先
+        // IMAX情報は E列（index 4）想定
         const imaxIndex = detectColumnIndex(header, "IMAX", 4);
 
         allRows = dataRows.map((cols) => {
@@ -449,7 +502,7 @@
 
         createTabs();
         createPrefOptions();
-        renderTable();
+        renderCards();
       } catch (err) {
         console.error(err);
         statusEl.textContent = "読み込み中にエラーが発生しました。";
