@@ -13,38 +13,53 @@
       --text-main: #222222;
       --text-sub: #666666;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
-      padding: 24px 16px 40px;
+      padding: 16px 10px 32px;
       background: var(--bg);
       color: var(--text-main);
       line-height: 1.6;
     }
-    .container { max-width: 1080px; margin: 0 auto; }
-    h1 {
-      font-size: 1.7rem;
-      margin: 0 0 0.4rem;
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
     }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 0 0 0.3rem;
+    }
+
     .subtitle {
-      margin: 0 0 1.2rem;
-      font-size: 1rem;
+      margin: 0 0 0.8rem;
+      font-size: 0.9rem;
       font-weight: 600;
       color: var(--text-sub);
     }
+
     .status {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--text-sub);
       margin-bottom: 8px;
     }
+
+    /* コントロールエリア（タブ＋都道府県プルダウン） */
     .controls {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px 16px;
+      gap: 8px 12px;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
+
+    /* タブ（すべて / IMAX） */
     .tabs {
       display: inline-flex;
       gap: 6px;
@@ -52,10 +67,11 @@
       border-bottom: 1px solid var(--border);
       flex-wrap: wrap;
     }
+
     .tab-btn {
       border: 1px solid var(--border);
       background: #ffffff;
-      padding: 6px 10px;
+      padding: 5px 12px;
       border-radius: 999px;
       font-size: 0.8rem;
       cursor: pointer;
@@ -63,60 +79,126 @@
       color: var(--text-sub);
       transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
+
     .tab-btn.active {
       background: var(--accent);
       border-color: var(--accent);
       color: #ffffff;
     }
+
+    /* 都道府県プルダウン */
     .pref-filter {
       margin-left: auto;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
+      gap: 4px;
+      font-size: 0.8rem;
     }
+
+    .pref-filter label {
+      color: var(--text-sub);
+    }
+
     .pref-filter select {
       padding: 4px 8px;
       border-radius: 6px;
       border: 1px solid var(--border);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       background: #ffffff;
     }
+
     .card {
       background: var(--card);
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+      padding: 10px;
     }
+
+    .table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     table {
       border-collapse: collapse;
       width: 100%;
-      min-width: 720px;
-      font-size: 0.88rem;
+      min-width: 640px;
+      font-size: 0.8rem;
     }
+
     thead {
       background: #222222;
       color: #ffffff;
     }
-    th, td {
-      padding: 8px 10px;
+
+    th,
+    td {
+      padding: 7px 8px;
       border-bottom: 1px solid var(--border);
       text-align: left;
+      vertical-align: top;
     }
-    tbody tr:nth-child(even) { background: #fafafa; }
-    a { color: var(--accent); text-decoration: none; }
+
+    tbody tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
     .chip-imax {
       display: inline-block;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 999px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       background: var(--accent);
       color: #ffffff;
     }
+
     .imax-detail {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-sub);
       margin-left: 4px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 12px 6px 24px;
+      }
+
+      h1 {
+        font-size: 1.25rem;
+      }
+
+      .subtitle {
+        font-size: 0.85rem;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .pref-filter {
+        margin-left: 0;
+      }
+
+      table {
+        min-width: 520px;
+        font-size: 0.78rem;
+      }
+
+      th,
+      td {
+        padding: 6px 6px;
+      }
     }
   </style>
 </head>
@@ -157,6 +239,7 @@
   </div>
 
   <script>
+    // 公開スプレッドシートのTSVエクスポートURL（gid=157320113）
     const SHEET_TSV_URL =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vShtDnZUCsyJKxq1mUB8Hgid98ngAWYAcgEwhCg2MaV3cqbmyRsEsbr2eyZ8XFdyW00ZdsB2BkJhVuC/pub?gid=157320113&single=true&output=tsv";
 
@@ -166,23 +249,29 @@
     const prefSelectEl = document.getElementById("prefSelect");
 
     let allRows = [];
-    let currentTabFilter = "ALL";
-    let currentPrefFilter = "ALL";
+    let currentTabFilter = "ALL";   // "ALL" | "IMAX-YES"
+    let currentPrefFilter = "ALL";  // "ALL" or 都道府県名
 
     function parseTSV(text) {
-      return text.trim().split(/\r?\n/).map(line => line.split("\t"));
+      return text
+        .trim()
+        .split(/\r?\n/)
+        .map((line) => line.split("\t"));
     }
 
-    function detectColumnIndex(header, name, fallback) {
-      return header.indexOf(name) !== -1 ? header.indexOf(name) : fallback;
+    function detectColumnIndex(header, name, fallbackIndex) {
+      const idx = header.indexOf(name);
+      return idx !== -1 ? idx : fallbackIndex;
     }
 
+    // タブを作成（すべて / IMAX）
     function createTabs() {
       const defs = [
         { key: "ALL", label: "すべて" },
-        { key: "IMAX-YES", label: "IMAXあり" },
-        { key: "IMAX-NO", label: "IMAXなし" },
+        { key: "IMAX-YES", label: "IMAX" },
       ];
+      tabsEl.innerHTML = "";
+
       defs.forEach((def, i) => {
         const btn = document.createElement("button");
         btn.textContent = def.label;
@@ -192,18 +281,39 @@
       });
 
       tabsEl.addEventListener("click", (e) => {
-        const btn = e.target.closest("button");
+        const btn = e.target.closest(".tab-btn");
         if (!btn) return;
-        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
+
         currentTabFilter = btn.dataset.filter;
         renderTable();
       });
     }
 
+    // 都道府県プルダウンを日本地理順で作成
     function createPrefOptions() {
-      const prefs = [...new Set(allRows.map(r => r.prefecture).filter(Boolean))].sort();
-      prefs.forEach(pref => {
+      const PREF_ORDER = [
+        "北海道",
+        "青森", "岩手", "宮城", "秋田", "山形", "福島",
+        "茨城", "栃木", "群馬", "埼玉", "千葉", "東京", "神奈川",
+        "新潟", "富山", "石川", "福井",
+        "山梨", "長野",
+        "岐阜", "静岡", "愛知", "三重",
+        "滋賀", "京都", "大阪", "兵庫", "奈良", "和歌山",
+        "鳥取", "島根", "岡山", "広島", "山口",
+        "徳島", "香川", "愛媛", "高知",
+        "福岡", "佐賀", "長崎", "熊本", "大分", "宮崎", "鹿児島",
+        "沖縄"
+      ];
+
+      const existingPrefs = [...new Set(allRows.map(r => r.prefecture).filter(Boolean))];
+      const sortedPrefs = PREF_ORDER.filter(pref => existingPrefs.includes(pref));
+
+      sortedPrefs.forEach((pref) => {
         const opt = document.createElement("option");
         opt.value = pref;
         opt.textContent = pref;
@@ -216,84 +326,133 @@
       });
     }
 
+    // タブ＆都道府県フィルターを適用
     function applyFilters() {
-      let rows = [...allRows];
+      let rows = allRows.slice();
 
-      if (currentTabFilter === "IMAX-YES")
-        rows = rows.filter(r => r.imaxAvailable);
-      else if (currentTabFilter === "IMAX-NO")
-        rows = rows.filter(r => !r.imaxAvailable);
+      // IMAXタブのときだけ IMAXあり を絞り込み
+      if (currentTabFilter === "IMAX-YES") {
+        rows = rows.filter((r) => r.imaxAvailable);
+      }
 
-      if (currentPrefFilter !== "ALL")
-        rows = rows.filter(r => r.prefecture === currentPrefFilter);
+      // 都道府県フィルター
+      if (currentPrefFilter !== "ALL") {
+        rows = rows.filter((r) => r.prefecture === currentPrefFilter);
+      }
 
       return rows;
     }
 
+    // テーブル描画
     function renderTable() {
       tbodyEl.innerHTML = "";
       const rows = applyFilters();
 
-      rows.forEach(row => {
+      rows.forEach((row) => {
         const tr = document.createElement("tr");
 
-        tr.innerHTML = `
-          <td>${row.prefecture}</td>
-          <td>${row.name}</td>
-          <td>${row.address}</td>
-          <td>${row.url ? `<a href="${row.url}" target="_blank">公式サイト</a>` : ""}</td>
-          <td>${
-            row.imaxAvailable
-              ? `<span class="chip-imax">IMAX</span>${
-                  row.imaxRaw && row.imaxRaw !== "IMAX"
-                    ? `<span class="imax-detail">${
-                        /^\d+$/.test(row.imaxRaw) ? `No.${row.imaxRaw}` : row.imaxRaw
-                      }</span>`
-                    : ""
-                }`
-              : ""
-          }</td>
-        `;
+        const tdPref = document.createElement("td");
+        tdPref.textContent = row.prefecture || "";
+        tr.appendChild(tdPref);
+
+        const tdName = document.createElement("td");
+        tdName.textContent = row.name || "";
+        tr.appendChild(tdName);
+
+        const tdAddr = document.createElement("td");
+        tdAddr.textContent = row.address || "";
+        tr.appendChild(tdAddr);
+
+        const tdLink = document.createElement("td");
+        if (row.url) {
+          const a = document.createElement("a");
+          a.href = row.url;
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.textContent = "公式サイト";
+          tdLink.appendChild(a);
+        }
+        tr.appendChild(tdLink);
+
+        const tdIMAX = document.createElement("td");
+        if (row.imaxAvailable) {
+          const chip = document.createElement("span");
+          chip.className = "chip-imax";
+          chip.textContent = "IMAX";
+          tdIMAX.appendChild(chip);
+
+          if (row.imaxRaw) {
+            const text = row.imaxRaw.trim();
+            if (text !== "IMAX" && text !== "-") {
+              const detail = document.createElement("span");
+              detail.className = "imax-detail";
+              // 数字だけなら No.X 表示
+              if (/^\d+$/.test(text)) {
+                detail.textContent = "No." + text;
+              } else {
+                detail.textContent = text;
+              }
+              tdIMAX.appendChild(detail);
+            }
+          }
+        } else {
+          tdIMAX.textContent = "";
+        }
+        tr.appendChild(tdIMAX);
 
         tbodyEl.appendChild(tr);
       });
 
-      statusEl.textContent = `表示中: ${rows.length}館`;
+      let label = currentTabFilter === "IMAX-YES" ? "IMAX" : "すべて";
+      if (currentPrefFilter !== "ALL") {
+        label += ` / ${currentPrefFilter}`;
+      }
+      statusEl.textContent = `表示中: ${label}（${rows.length}館）`;
     }
 
+    // 初期化：スプレッドシートから読み込み
     async function init() {
       try {
-        const res = await fetch(SHEET_TSV_URL);
-        const text = await res.text();
+        statusEl.textContent = "読み込み中…";
 
+        const res = await fetch(SHEET_TSV_URL);
+        if (!res.ok) throw new Error("HTTP status " + res.status);
+
+        const text = await res.text();
         const rows = parseTSV(text);
+        if (rows.length < 2) throw new Error("データ行がありません");
+
         const header = rows[0];
-        const data = rows.slice(1).filter(r => r.some(c => c.trim() !== ""));
+        const dataRows = rows
+          .slice(1)
+          .filter((cols) => cols.some((c) => c.trim() !== ""));
 
         const prefIndex = detectColumnIndex(header, "都道府県", 0);
         const nameIndex = detectColumnIndex(header, "劇場名", 1);
         const urlIndex  = detectColumnIndex(header, "URL", 2);
         const addrIndex = detectColumnIndex(header, "住所", 3);
-        const imaxIndex = detectColumnIndex(header, "IMAX", 4); // ← E列
+        // IMAX情報は E列（index 4）想定。ヘッダー名が「IMAX」ならそれを優先
+        const imaxIndex = detectColumnIndex(header, "IMAX", 4);
 
-        allRows = data.map(cols => {
+        allRows = dataRows.map((cols) => {
           const imaxRaw = (cols[imaxIndex] || "").trim();
+          const imaxAvailable = imaxRaw !== "" && imaxRaw !== "-";
           return {
             prefecture: (cols[prefIndex] || "").trim(),
             name:       (cols[nameIndex] || "").trim(),
             url:        (cols[urlIndex]  || "").trim(),
             address:    (cols[addrIndex] || "").trim(),
             imaxRaw,
-            imaxAvailable: imaxRaw !== "" && imaxRaw !== "-",
+            imaxAvailable,
           };
         });
 
         createTabs();
         createPrefOptions();
         renderTable();
-      } catch (e) {
-        console.error(e);
-        statusEl.textContent = "読み込みエラーが発生しました。";
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "読み込み中にエラーが発生しました。";
       }
     }
 
