@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>IMAXシアター一覧（都道府県別）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f7f7f7;
+      --card: #ffffff;
+      --accent: #0056b3;
+      --accent-soft: #e3efff;
+      --border: #dddddd;
+      --text-main: #222222;
+      --text-sub: #666666;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 24px 16px 40px;
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.7rem;
+      margin: 0 0 0.4rem;
+    }
+    .desc {
+      margin: 0 0 1.5rem;
+      color: var(--text-sub);
+      font-size: 0.9rem;
+    }
+    .chip-imax {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: var(--accent);
+      color: #ffffff;
+    }
+    .tabs-wrapper {
+      margin-bottom: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tabs {
+      display: inline-flex;
+      flex-wrap: nowrap;
+      gap: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+      min-width: 100%;
+    }
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: #ffffff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      color: var(--text-sub);
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+    }
+    .tab-btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      padding: 16px;
+    }
+    .table-wrapper { overflow-x: auto; }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 720px;
+      font-size: 0.88rem;
+    }
+    thead { background: #222; color: #fff; }
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    tbody tr:nth-child(even) { background: #fafafa; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .status {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>IMAXシアター一覧（都道府県別）</h1>
+    <p class="desc">
+      Googleスプレッドシートで管理している IMAX 対応劇場リストをもとに自動生成しています。<br />
+      情報は変わる可能性があるため、鑑賞前に各劇場公式サイトで最新情報をご確認ください。
+    </p>
+
+    <div class="status" id="status">読み込み中...</div>
+
+    <div class="tabs-wrapper">
+      <div class="tabs" id="tabs"></div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>都道府県</th>
+              <th>劇場名</th>
+              <th>住所</th>
+              <th>リンク</th>
+              <th>IMAX</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ★あなたの公開スプシ TSV URL（IMAXシート）
+    const SHEET_TSV_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vShtDnZUCsyJKxq1mUB8Hgid98ngAWYAcgEwhCg2MaV3cqbmyRsEsbr2eyZ8XFdyW00ZdsB2BkJhVuC/pub?gid=157320113&single=true&output=tsv";
+
+    const statusEl = document.getElementById("status");
+    const tabsEl = document.getElementById("tabs");
+    const tbodyEl = document.getElementById("table-body");
+
+    let allRows = [];
+    let prefectures = [];
+
+    function parseTSV(text) {
+      return text.trim().split(/\r?\n/).map(line => line.split("\t"));
+    }
+
+    function detectColumnIndex(header, name, fallback) {
+      const idx = header.indexOf(name);
+      return idx !== -1 ? idx : fallback;
+    }
+
+    function createTabs(list) {
+      tabsEl.innerHTML = "";
+
+      // 全体タブ
+      const allBtn = document.createElement("button");
+      allBtn.textContent = "すべて";
+      allBtn.className = "tab-btn active";
+      allBtn.dataset.pref = "ALL";
+      tabsEl.appendChild(allBtn);
+
+      list.forEach(pref => {
+        const btn = document.createElement("button");
+        btn.textContent = pref;
+        btn.className = "tab-btn";
+        btn.dataset.pref = pref;
+        tabsEl.appendChild(btn);
+      });
+
+      tabsEl.addEventListener("click", e => {
+        const btn = e.target.closest(".tab-btn");
+        if (!btn) return;
+
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        renderTable(btn.dataset.pref);
+      });
+    }
+
+    function renderTable(pref) {
+      tbodyEl.innerHTML = "";
+      let rows = allRows;
+      if (pref !== "ALL") {
+        rows = allRows.filter(r => r.prefecture === pref);
+      }
+
+      rows.forEach(row => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${row.prefecture}</td>
+          <td>${row.name}</td>
+          <td>${row.address}</td>
+          <td>${row.url ? `<a href="${row.url}" target="_blank">公式</a>` : ""}</td>
+          <td><span class="chip-imax">IMAX</span></td>
+        `;
+        tbodyEl.appendChild(tr);
+      });
+
+      statusEl.textContent = `表示中: ${pref === "ALL" ? "全国" : pref}（${rows.length}館）`;
+    }
+
+    async function init() {
+      try {
+        const res = await fetch(SHEET_TSV_URL);
+        const text = await res.text();
+        const rows = parseTSV(text);
+
+        const header = rows[0];
+        const data = rows.slice(1);
+
+        // 列推定（スプシの列名に合わせる）
+        const prefIndex = detectColumnIndex(header, "都道府県", 0);
+        const nameIndex = detectColumnIndex(header, "劇場名", 1);
+        const urlIndex  = detectColumnIndex(header, "URL", 2);
+        const addrIndex = detectColumnIndex(header, "住所", 3);
+        const imaxIndex = detectColumnIndex(header, "IMAX", 4);
+
+        // 「IMAX欄が '-' 以外」を IMAX館として抽出
+        allRows = data
+          .map(col => ({
+            prefecture: col[prefIndex]?.trim(),
+            name: col[nameIndex]?.trim(),
+            url: col[urlIndex]?.trim(),
+            address: col[addrIndex]?.trim(),
+            imax: col[imaxIndex]?.trim()
+          }))
+          .filter(r => r.imax && r.imax !== "-");
+
+        // 都道府県一覧生成
+        prefectures = [...new Set(allRows.map(r => r.prefecture).filter(Boolean))]
+          .sort((a, b) => a.localeCompare(b, "ja"));
+
+        createTabs(prefectures);
+        renderTable("ALL");
+      } catch (e) {
+        console.error(e);
+        statusEl.textContent = "読み込みエラー：スプシ公開設定を確認してください。";
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
