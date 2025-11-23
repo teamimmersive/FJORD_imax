@@ -116,60 +116,58 @@
       background: var(--card);
       border-radius: 10px;
       box-shadow: var(--shadow);
-      padding: 8px 9px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
+      width: 100%;
+      overflow: hidden; /* 横スクロール防止 */
     }
 
-    .card-header {
+    /* IMAXをカード最上段に */
+    .card-imax-top {
       display: flex;
       align-items: center;
       gap: 6px;
       flex-wrap: nowrap;
     }
 
-    .card-pref {
-      font-size: 0.7rem;
-      color: var(--text-sub);
-      padding: 1px 6px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #fafafa;
+    .chip-imax {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
       flex-shrink: 0;
+      white-space: nowrap;
     }
 
+    .imax-number {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    /* 劇場名 */
     .card-title {
-      font-size: 0.86rem;
+      font-size: 0.9rem;
       font-weight: 600;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      flex: 1;
     }
 
-    .card-imax {
-      margin-left: 4px;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      flex-shrink: 0;
-    }
-
-    .chip-imax {
-      display: inline-block;
+    /* 都道府県 */
+    .card-pref {
+      font-size: 0.75rem;
+      color: #777;
       padding: 2px 6px;
-      border-radius: 999px;
-      font-size: 0.68rem;
-      background: var(--accent);
-      color: #ffffff;
-      white-space: nowrap;
-    }
-
-    .imax-detail {
-      font-size: 0.68rem;
-      color: var(--text-sub);
-      white-space: nowrap;
+      background: #f3f3f3;
+      border-radius: 6px;
+      width: fit-content;
     }
 
     .card-body {
@@ -192,6 +190,8 @@
       flex-wrap: nowrap;
       gap: 4px;
       align-items: center;
+      max-width: 100%;
+      overflow: hidden;
     }
 
     .address-text {
@@ -371,7 +371,7 @@
       return rows;
     }
 
-    // カード描画
+    // カード描画（縦構造）
     function renderCards() {
       cardsEl.innerHTML = "";
       const rows = applyFilters();
@@ -380,45 +380,40 @@
         const card = document.createElement("div");
         card.className = "card";
 
-        const header = document.createElement("div");
-        header.className = "card-header";
-
-        const pref = document.createElement("div");
-        pref.className = "card-pref";
-        pref.textContent = row.prefecture || "";
-        header.appendChild(pref);
-
-        const title = document.createElement("div");
-        title.className = "card-title";
-        title.textContent = row.name || "";
-        header.appendChild(title);
-
+        // --- IMAXを一番上に表示 ---
         if (row.imaxAvailable) {
-          const imaxWrap = document.createElement("div");
-          imaxWrap.className = "card-imax";
+          const imaxTop = document.createElement("div");
+          imaxTop.className = "card-imax-top";
 
           const chip = document.createElement("span");
           chip.className = "chip-imax";
           chip.textContent = "IMAX";
-          imaxWrap.appendChild(chip);
+          imaxTop.appendChild(chip);
 
           const text = row.imaxRaw.trim();
-          if (text && text !== "IMAX" && text !== "-") {
-            const detail = document.createElement("span");
-            detail.className = "imax-detail";
-            if (/^\d+$/.test(text)) {
-              detail.textContent = "No." + text;
-            } else {
-              detail.textContent = text;
-            }
-            imaxWrap.appendChild(detail);
+          if (text !== "IMAX" && text !== "-") {
+            const num = document.createElement("span");
+            num.className = "imax-number";
+            num.textContent = /^\d+$/.test(text) ? `No.${text}` : text;
+            imaxTop.appendChild(num);
           }
 
-          header.appendChild(imaxWrap);
+          card.appendChild(imaxTop);
         }
 
-        card.appendChild(header);
+        // --- 劇場名 ---
+        const title = document.createElement("div");
+        title.className = "card-title";
+        title.textContent = row.name || "";
+        card.appendChild(title);
 
+        // --- 都道府県 ---
+        const pref = document.createElement("div");
+        pref.className = "card-pref";
+        pref.textContent = row.prefecture || "";
+        card.appendChild(pref);
+
+        // --- 本文（住所＋リンク） ---
         const body = document.createElement("div");
         body.className = "card-body";
 
