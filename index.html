@@ -15,9 +15,7 @@
       --shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -36,14 +34,34 @@
 
     h1 {
       font-size: 1.25rem;
-      margin: 0 0 0.1rem;
+      margin: 0 0 0.2rem;
     }
 
     .subtitle {
-      margin: 0 0 0.5rem;
+      margin: 0 0 0.7rem;
       font-size: 0.82rem;
       font-weight: 600;
       color: var(--text-sub);
+    }
+
+    .notice-box {
+      background: #fff8e1;
+      padding: 8px 12px;
+      border-left: 4px solid #ffb300;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .notice-box a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .notice-box a:hover {
+      text-decoration: underline;
     }
 
     .status {
@@ -52,7 +70,6 @@
       margin-bottom: 6px;
     }
 
-    /* コントロール（タブ＋都道府県） */
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -105,7 +122,6 @@
       background: #ffffff;
     }
 
-    /* カードリスト */
     .cards {
       display: grid;
       grid-template-columns: 1fr;
@@ -121,10 +137,9 @@
       flex-direction: column;
       gap: 6px;
       width: 100%;
-      overflow: hidden; /* 横スクロール防止 */
+      overflow: hidden;
     }
 
-    /* IMAXをカード最上段に */
     .card-imax-top {
       display: flex;
       align-items: center;
@@ -151,7 +166,6 @@
       white-space: nowrap;
     }
 
-    /* 劇場名 */
     .card-title {
       font-size: 0.9rem;
       font-weight: 600;
@@ -160,7 +174,6 @@
       white-space: nowrap;
     }
 
-    /* 都道府県 */
     .card-pref {
       font-size: 0.75rem;
       color: #777;
@@ -224,17 +237,9 @@
     }
 
     @media (max-width: 600px) {
-      body {
-        padding: 8px 6px 18px;
-      }
-
-      h1 {
-        font-size: 1.15rem;
-      }
-
-      .subtitle {
-        font-size: 0.8rem;
-      }
+      body { padding: 8px 6px 18px; }
+      h1 { font-size: 1.15rem; }
+      .subtitle { font-size: 0.8rem; }
 
       .controls {
         flex-direction: column;
@@ -247,10 +252,18 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>MGA MAGICAL 10 YEARS ANNIVERSARY LIVE FJORD ON SCREEN</h1>
     <p class="subtitle">IMAX 上映映画館リスト</p>
+
+    <!-- 🔥 追加部分ここから -->
+    <div class="notice-box">
+      IMAX版には追加料金がかかる場合がございます。<br>
+      Research by <a href="https://x.com/immersivetoyama?s=21&t=wwlJ0ehzK3cZI6Zmqu-bCA" target="_blank">立体音響普及委員会</a>
+    </div>
+    <!-- 🔥 追加部分ここまで -->
 
     <div class="status" id="status">読み込み中...</div>
 
@@ -269,7 +282,6 @@
   </div>
 
   <script>
-    // 公開スプレッドシート（gid=157320113）のTSV
     const SHEET_TSV_URL =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vShtDnZUCsyJKxq1mUB8Hgid98ngAWYAcgEwhCg2MaV3cqbmyRsEsbr2eyZ8XFdyW00ZdsB2BkJhVuC/pub?gid=157320113&single=true&output=tsv";
 
@@ -279,14 +291,11 @@
     const prefSelectEl = document.getElementById("prefSelect");
 
     let allRows = [];
-    let currentTabFilter = "ALL";   // "ALL" | "IMAX-YES"
-    let currentPrefFilter = "ALL";  // "ALL" or 都道府県名
+    let currentTabFilter = "ALL";
+    let currentPrefFilter = "ALL";
 
     function parseTSV(text) {
-      return text
-        .trim()
-        .split(/\r?\n/)
-        .map((line) => line.split("\t"));
+      return text.trim().split(/\r?\n/).map((l) => l.split("\t"));
     }
 
     function detectColumnIndex(header, name, fallbackIndex) {
@@ -294,7 +303,9 @@
       return idx !== -1 ? idx : fallbackIndex;
     }
 
-    // タブ（すべて / IMAX）
+    /* -------------------------
+       タブ作成（すべて / IMAX）
+    ---------------------------*/
     function createTabs() {
       const defs = [
         { key: "ALL", label: "すべて" },
@@ -302,11 +313,11 @@
       ];
       tabsEl.innerHTML = "";
 
-      defs.forEach((def, i) => {
+      defs.forEach((d, i) => {
         const btn = document.createElement("button");
-        btn.textContent = def.label;
+        btn.textContent = d.label;
         btn.className = "tab-btn" + (i === 0 ? " active" : "");
-        btn.dataset.filter = def.key;
+        btn.dataset.filter = d.key;
         tabsEl.appendChild(btn);
       });
 
@@ -314,9 +325,7 @@
         const btn = e.target.closest(".tab-btn");
         if (!btn) return;
 
-        document
-          .querySelectorAll(".tab-btn")
-          .forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
 
         currentTabFilter = btn.dataset.filter;
@@ -324,7 +333,9 @@
       });
     }
 
-    // 都道府県プルダウン（北→南）
+    /* -------------------------
+       都道府県リスト（北 → 南）
+    ---------------------------*/
     function createPrefOptions() {
       const PREF_ORDER = [
         "北海道",
@@ -340,10 +351,10 @@
         "沖縄"
       ];
 
-      const existingPrefs = [...new Set(allRows.map(r => r.prefecture).filter(Boolean))];
-      const sortedPrefs = PREF_ORDER.filter(pref => existingPrefs.includes(pref));
+      const existing = [...new Set(allRows.map(r => r.prefecture))];
+      const sorted = PREF_ORDER.filter(p => existing.includes(p));
 
-      sortedPrefs.forEach((pref) => {
+      sorted.forEach((pref) => {
         const opt = document.createElement("option");
         opt.value = pref;
         opt.textContent = pref;
@@ -356,7 +367,9 @@
       });
     }
 
-    // フィルター適用
+    /* -------------------------
+       フィルター適用
+    ---------------------------*/
     function applyFilters() {
       let rows = allRows.slice();
 
@@ -371,7 +384,9 @@
       return rows;
     }
 
-    // カード描画（縦構造）
+    /* -------------------------
+       カード描画
+    ---------------------------*/
     function renderCards() {
       cardsEl.innerHTML = "";
       const rows = applyFilters();
@@ -380,71 +395,51 @@
         const card = document.createElement("div");
         card.className = "card";
 
-        // --- IMAXを一番上に表示 ---
         if (row.imaxAvailable) {
-          const imaxTop = document.createElement("div");
-          imaxTop.className = "card-imax-top";
+          const top = document.createElement("div");
+          top.className = "card-imax-top";
 
           const chip = document.createElement("span");
           chip.className = "chip-imax";
           chip.textContent = "IMAX";
-          imaxTop.appendChild(chip);
+          top.appendChild(chip);
 
           const text = row.imaxRaw.trim();
           if (text !== "IMAX" && text !== "-") {
             const num = document.createElement("span");
             num.className = "imax-number";
             num.textContent = /^\d+$/.test(text) ? `No.${text}` : text;
-            imaxTop.appendChild(num);
+            top.appendChild(num);
           }
 
-          card.appendChild(imaxTop);
+          card.appendChild(top);
         }
 
-        // --- 劇場名 ---
         const title = document.createElement("div");
         title.className = "card-title";
-        title.textContent = row.name || "";
+        title.textContent = row.name;
         card.appendChild(title);
 
-        // --- 都道府県 ---
         const pref = document.createElement("div");
         pref.className = "card-pref";
-        pref.textContent = row.prefecture || "";
+        pref.textContent = row.prefecture;
         card.appendChild(pref);
 
-        // --- 本文（住所＋リンク） ---
         const body = document.createElement("div");
         body.className = "card-body";
 
         if (row.address) {
-          const addrRow = document.createElement("div");
-          addrRow.className = "card-row-inline";
-          const label = document.createElement("span");
-          label.className = "card-label";
-          label.textContent = "住所";
-          const addr = document.createElement("span");
-          addr.className = "address-text";
-          addr.textContent = row.address;
-          addrRow.appendChild(label);
-          addrRow.appendChild(addr);
-          body.appendChild(addrRow);
+          const a = document.createElement("div");
+          a.className = "card-row-inline";
+          a.innerHTML = `<span class="card-label">住所</span><span class="address-text">${row.address}</span>`;
+          body.appendChild(a);
         }
 
         if (row.url) {
-          const linkRow = document.createElement("div");
-          linkRow.className = "card-row-inline";
-          const label = document.createElement("span");
-          label.className = "card-label";
-          label.textContent = "公式";
-          const link = document.createElement("a");
-          link.href = row.url;
-          link.target = "_blank";
-          link.rel = "noopener";
-          link.textContent = "Webサイト";
-          linkRow.appendChild(label);
-          linkRow.appendChild(link);
-          body.appendChild(linkRow);
+          const u = document.createElement("div");
+          u.className = "card-row-inline";
+          u.innerHTML = `<span class="card-label">公式</span><a href="${row.url}" target="_blank">Webサイト</a>`;
+          body.appendChild(u);
         }
 
         card.appendChild(body);
@@ -452,46 +447,39 @@
       });
 
       let label = currentTabFilter === "IMAX-YES" ? "IMAX" : "すべて";
-      if (currentPrefFilter !== "ALL") {
-        label += ` / ${currentPrefFilter}`;
-      }
+      if (currentPrefFilter !== "ALL") label += ` / ${currentPrefFilter}`;
       statusEl.textContent = `表示中: ${label}（${rows.length}館）`;
     }
 
-    // 初期化
+    /* -------------------------
+       初期化
+    ---------------------------*/
     async function init() {
       try {
         statusEl.textContent = "読み込み中…";
 
         const res = await fetch(SHEET_TSV_URL);
-        if (!res.ok) throw new Error("HTTP status " + res.status);
-
         const text = await res.text();
         const rows = parseTSV(text);
-        if (rows.length < 2) throw new Error("データ行がありません");
 
         const header = rows[0];
-        const dataRows = rows
-          .slice(1)
-          .filter((cols) => cols.some((c) => c.trim() !== ""));
+        const data = rows.slice(1).filter(r => r.some(c => c.trim() !== ""));
 
         const prefIndex = detectColumnIndex(header, "都道府県", 0);
         const nameIndex = detectColumnIndex(header, "劇場名", 1);
         const urlIndex  = detectColumnIndex(header, "URL", 2);
         const addrIndex = detectColumnIndex(header, "住所", 3);
-        // IMAX情報は E列（index 4）想定
-        const imaxIndex = detectColumnIndex(header, "IMAX", 4);
+        const imaxIndex = detectColumnIndex(header, "IMAX", 4); // E列
 
-        allRows = dataRows.map((cols) => {
+        allRows = data.map(cols => {
           const imaxRaw = (cols[imaxIndex] || "").trim();
-          const imaxAvailable = imaxRaw !== "" && imaxRaw !== "-";
           return {
             prefecture: (cols[prefIndex] || "").trim(),
             name:       (cols[nameIndex] || "").trim(),
             url:        (cols[urlIndex]  || "").trim(),
             address:    (cols[addrIndex] || "").trim(),
             imaxRaw,
-            imaxAvailable,
+            imaxAvailable: imaxRaw !== "" && imaxRaw !== "-",
           };
         });
 
@@ -499,8 +487,8 @@
         createPrefOptions();
         renderCards();
       } catch (err) {
+        statusEl.textContent = "エラーが発生しました";
         console.error(err);
-        statusEl.textContent = "読み込み中にエラーが発生しました。";
       }
     }
 
